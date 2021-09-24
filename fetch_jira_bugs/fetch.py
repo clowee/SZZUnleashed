@@ -9,7 +9,6 @@ import urllib.request as url
 import json
 import os
 import argparse
-import io
 import sys
 
 def fetch(project_issue_code, jira_project_name):
@@ -42,7 +41,7 @@ def fetch(project_issue_code, jira_project_name):
     print('Progress: | = ' + str(max_results) + ' issues')
     while start_at < total:
         with url.urlopen(request.format(jql, start_at, max_results)) as conn:
-            with io.open('issues/res' + str(start_at) + '.json', 'w', encoding="utf-8") as f:
+            with open('issues/res' + str(start_at) + '.json', 'w', encoding="utf-8") as f:
                 f.write(conn.read().decode('utf-8', 'ignore'))
         print('|', end='', flush='True')
         start_at += max_results
