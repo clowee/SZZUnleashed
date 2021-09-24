@@ -67,5 +67,4 @@ if __name__ == '__main__':
     project_issue_code = args.issue_code
     jira_project_name = args.jira_project
     path = args.save_path
-    print(path)
     fetch(project_issue_code, jira_project_name, path)
