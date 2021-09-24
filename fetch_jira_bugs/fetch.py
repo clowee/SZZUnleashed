@@ -28,8 +28,9 @@ def fetch(project_issue_code, jira_project_name):
     max_results = 1000
 
     os.makedirs('issues/', exist_ok=True)
-    request = 'https://' + jira_project_name + '/rest/api/2/search?'\
-        + 'jql={}&startAt={}&maxResults={}'
+    request = jira_project_name + '/rest/api/2/search?jql={}&startAt={}&maxResults={}'
+    if 'http' not in jira_project_name:
+        request = 'https://'+request
 
     # Do small request to establish value of 'total'
     with url.urlopen(request.format(jql, start_at, '1')) as conn:
