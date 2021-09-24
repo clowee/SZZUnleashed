@@ -16,11 +16,8 @@ def fetch(project_issue_code, jira_project_name):
     """ Fetch issues that match given jql query """
     # Jira Query Language string which filters for resolved issues of type bug
     jql = 'project = ' + project_issue_code + ' ' \
-        + 'AND issuetype = Bug '\
         + 'AND status in (Resolved, Closed) '\
         + 'AND resolution = Fixed '\
-        + 'AND component = core '\
-        + 'AND created <= "2018-02-20 10:34" '\
         + 'ORDER BY created DESC'
     jql = quote(jql, safe='')
 
