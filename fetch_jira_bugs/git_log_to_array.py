@@ -10,7 +10,7 @@ import sys
 import json
 import os
 
-def git_log_to_json(init_hash, path_to_repo, path_to_save=None):
+def git_log_to_array(init_hash, path_to_repo, path_to_save=None):
     if path_to_save is None:
         path_to_save = ''
     hashes = subprocess.run(['git', 'rev-list', init_hash], cwd=path_to_repo,
@@ -45,11 +45,11 @@ if __name__ == '__main__':
     parser.add_argument('--repo-path', type=str,
             help="The absolute path to a local copy of the git repository from where the git log is taken.")
     parser.add_argument('--save-path', type=str,
-            help="Path to save 'gitlog.json' file."
+            help="Path to save 'gitlog.json' file.")
 
     args = parser.parse_args()
     path_to_repo = args.repo_path
     init_hash = args.from_commit
     path_to_save = args.save_path
-    git_log_to_json(init_hash, path_to_repo, path_to_save)
+    git_log_to_array(init_hash, path_to_repo, path_to_save)
 
