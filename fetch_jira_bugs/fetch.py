@@ -11,8 +11,10 @@ import os
 import argparse
 import sys
 
-def fetch(project_issue_code, jira_project_name):
+def fetch(project_issue_code, jira_project_name, path_to_save=None):
     """ Fetch issues that match given jql query """
+    if path_to_save is None:
+        path_to_save = ''
     # Jira Query Language string which filters for resolved issues of type bug
     jql = 'project = ' + project_issue_code + ' ' \
         + 'AND status in (Resolved, Closed) '\
@@ -26,7 +28,8 @@ def fetch(project_issue_code, jira_project_name):
     # still return only the first 1000 results
     max_results = 1000
 
-    os.makedirs('issues/', exist_ok=True)
+    issue_dir = os.path.join(path_to_save, 'issues')
+    os.makedirs(issue_dir, exist_ok=True)
     request = jira_project_name + '/rest/api/2/search?jql={}&startAt={}&maxResults={}'
     if 'http' not in jira_project_name:
         request = 'https://'+request
@@ -41,7 +44,9 @@ def fetch(project_issue_code, jira_project_name):
     print('Progress: | = ' + str(max_results) + ' issues')
     while start_at < total:
         with url.urlopen(request.format(jql, start_at, max_results)) as conn:
-            with open('issues/res' + str(start_at) + '.json', 'w', encoding="utf-8") as f:
+            name = 'res'+str(start_at)+'.json'
+            path = os.path.join(issue_dir, name)
+            with open(path, 'w', encoding="utf-8") as f:
                 f.write(conn.read().decode('utf-8', 'ignore'))
         print('|', end='', flush='True')
         start_at += max_results
@@ -50,14 +55,17 @@ def fetch(project_issue_code, jira_project_name):
 
 if __name__ == '__main__':
 
-	parser = argparse.ArgumentParser(description="""Convert a git log output to json.
+    parser = argparse.ArgumentParser(description="""Convert a git log output to json.
                                                  """)
-	parser.add_argument('--issue-code', type=str,
-        	help="The code used for the project issues on JIRA: e.g., JENKINS-1123. Only JENKINS needs to be passed as parameter.")
-	parser.add_argument('--jira-project', type=str,
+    parser.add_argument('--issue-code', type=str,
+            help="The code used for the project issues on JIRA: e.g., JENKINS-1123. Only JENKINS needs to be passed as parameter.")
+    parser.add_argument('--jira-project', type=str,
             help="The name of the Jira repository of the project.")
+    parser.add_argument('--save-path', type=str, help="Path where to create the 'issues' folder.")
 
-	args = parser.parse_args()
-	project_issue_code = args.issue_code
-	jira_project_name = args.jira_project
-	fetch(project_issue_code, jira_project_name)
+    args = parser.parse_args()
+    project_issue_code = args.issue_code
+    jira_project_name = args.jira_project
+    path = args.save_path
+    print(path)
+    fetch(project_issue_code, jira_project_name, path)
