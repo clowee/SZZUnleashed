@@ -60,7 +60,7 @@ def find_bug_fixes(issue_path, gitlog_path, gitlog_pattern, save_path=None):
         issue_list.pop(key)
     
     try:
-        os.makedirs(save_path)
+        os.makedirs(save_path, exist_ok=True)
     except FileNotFoundError:
         pass
     save = os.path.join(save_path, 'issue_list.json')
