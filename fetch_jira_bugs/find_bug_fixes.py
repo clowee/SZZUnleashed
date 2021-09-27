@@ -8,8 +8,10 @@ import json
 import re
 import argparse
 
-def find_bug_fixes(issue_path, gitlog_path, gitlog_pattern):
+def find_bug_fixes(issue_path, gitlog_path, gitlog_pattern, save_path=None):
     """ Identify bugfixes in Jenkins repository given a list of issues """
+    if save_path is None:
+        save_path = ''
 
     i = 0 # Used to display progress
     no_matches = []
@@ -27,11 +29,7 @@ def find_bug_fixes(issue_path, gitlog_path, gitlog_pattern):
         for commit in gitlog:
             pattern = gitlog_pattern.format(nbr=nbr)
             if re.search(pattern, commit):
-                if re.search(r'#{nbr}\D'.format(nbr=nbr), commit) \
-                    and not re.search('[Ff]ix', commit):
-                    pass
-                else:
-                    matches.append(commit)
+                matches.append(commit)
         total_matches += len(matches)
         matches_per_issue[key] = len(matches)
 
@@ -60,6 +58,14 @@ def find_bug_fixes(issue_path, gitlog_path, gitlog_pattern):
           str((len(issue_list) - len(no_matches)) / len(issue_list)))
     for key in no_matches:
         issue_list.pop(key)
+    
+    try:
+        os.makedirs(save_path)
+    except FileNotFoundError:
+        pass
+    save = os.path.join(save_path, 'issue_list.json')
+    with open(save, 'w') as f:
+        f.write(json.dumps(issue_list))
 
     return issue_list
 
@@ -70,6 +76,7 @@ def build_issue_list(path):
     for filename in os.listdir(path):
         with open(path + '/' + filename) as f:
             for issue in json.loads(f.read())['issues']:
+                '''
                 issue_list[issue['key']] = {}
 
                 created_date = issue['fields']['created'].replace('T', ' ')
@@ -79,6 +86,17 @@ def build_issue_list(path):
                 res_date = issue['fields']['resolutiondate'].replace('T', ' ')
                 res_date = res_date.replace('.000', ' ')
                 issue_list[issue['key']]['resolutiondate'] = res_date
+                '''
+                issue_list[issue['key']] = issue['fields']
+                created_date = issue['fields']['created'].replace('T', ' ')
+                created_date = created_date.replace('.000', ' ')
+                issue_list[issue['key']]['creationdate'] = created_date
+                issue_list[issue['key']].pop('created')
+
+                res_date = issue['fields']['resolutiondate'].replace('T', ' ')
+                res_date = res_date.replace('.000', ' ')
+                issue_list[issue['key']]['resolutiondate'] = res_date
+            
     return issue_list
 
 def commit_selector_heuristic(commits):
@@ -91,7 +109,8 @@ def commit_selector_heuristic(commits):
             return commit
     return commits[0]
 
-def main():
+
+if __name__ == '__main__':
     """ Main method """
     parser = argparse.ArgumentParser(description="""Identify bugfixes. Use this script together with a
                                                     gitlog.json and a path with issues. The gitlog.json
@@ -104,11 +123,8 @@ def main():
                         help='Path to directory containing issue json files')
     parser.add_argument('--gitlog-pattern', type=str,
                         help='Pattern to match a bugfix')
+    parser.add_argument('--save-path', type=str,
+                        help='Path to write issue_list.json')
     args = parser.parse_args()
 
-    issue_list = find_bug_fixes(args.issue_list, args.gitlog, args.gitlog_pattern)
-    with open('issue_list.json', 'w') as f:
-        f.write(json.dumps(issue_list))
-
-if __name__ == '__main__':
-    main()
+    issue_list = find_bug_fixes(args.issue_list, args.gitlog, args.gitlog_pattern, args.save_path)
