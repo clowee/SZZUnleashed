@@ -10,6 +10,7 @@ code-maat/*
 **datasets
 
 __pycache__
+CONST.py
 
 szz/bin/*
 szz/build/*
