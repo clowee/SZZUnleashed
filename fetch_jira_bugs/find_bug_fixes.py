@@ -76,22 +76,21 @@ def build_issue_list(path):
     for filename in os.listdir(path):
         with open(path + '/' + filename) as f:
             for issue in json.loads(f.read())['issues']:
-                '''
                 issue_list[issue['key']] = {}
+                try:
+                    issue_list[issue['key']]['priority'] = issue['fields']['priority']['name']
+                except:
+                    pass
+                try:
+                    issue_list[issue['key']]['type'] = issue['fields']['issuetype']['name']
+                except:
+                    pass
+                issue_list[issue['key']]['summary'] = issue['fields']['summary']
+                issue_list[issue['key']]['description'] = issue['fields']['description']
 
                 created_date = issue['fields']['created'].replace('T', ' ')
                 created_date = created_date.replace('.000', ' ')
                 issue_list[issue['key']]['creationdate'] = created_date
-
-                res_date = issue['fields']['resolutiondate'].replace('T', ' ')
-                res_date = res_date.replace('.000', ' ')
-                issue_list[issue['key']]['resolutiondate'] = res_date
-                '''
-                issue_list[issue['key']] = issue['fields']
-                created_date = issue['fields']['created'].replace('T', ' ')
-                created_date = created_date.replace('.000', ' ')
-                issue_list[issue['key']]['creationdate'] = created_date
-                issue_list[issue['key']].pop('created')
 
                 res_date = issue['fields']['resolutiondate'].replace('T', ' ')
                 res_date = res_date.replace('.000', ' ')
