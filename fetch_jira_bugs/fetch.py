@@ -17,8 +17,6 @@ def fetch(project_issue_code, jira_project_name, path_to_save=None):
         path_to_save = ''
     # Jira Query Language string which filters for resolved issues of type bug
     jql = 'project = ' + project_issue_code + ' ' \
-        + 'AND status in (Resolved, Closed) '\
-        + 'AND resolution = Fixed '\
         + 'ORDER BY created DESC'
     jql = quote(jql, safe='')
 
