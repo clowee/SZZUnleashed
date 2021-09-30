@@ -11,13 +11,22 @@ import os
 import argparse
 import sys
 
-def fetch(project_issue_code, jira_project_name, path_to_save=None):
+def fetch(project_issue_code, jira_project_name, path_to_save=None, only_bugs=True):
     """ Fetch issues that match given jql query """
     if path_to_save is None:
         path_to_save = ''
     # Jira Query Language string which filters for resolved issues of type bug
-    jql = 'project = ' + project_issue_code + ' ' \
-        + 'ORDER BY created DESC'
+    if only_bugs:
+        jql = 'project = ' + project_issue_code + ' ' \
+            + 'AND issuetype = Bug '\
+            + 'AND status in (Resolved, Closed) '\
+            + 'AND resolution = Fixed '\
+            + 'ORDER BY created DESC'
+        issue_dir = os.path.join(path_to_save, 'issues')
+    else:
+        jql = 'project = ' + project_issue_code + ' ' \
+            + 'ORDER BY created DESC'
+        issue_dir = os.path.join(path_to_save, 'issues_all')
     jql = quote(jql, safe='')
 
     start_at = 0
@@ -26,7 +35,6 @@ def fetch(project_issue_code, jira_project_name, path_to_save=None):
     # still return only the first 1000 results
     max_results = 1000
 
-    issue_dir = os.path.join(path_to_save, 'issues')
     os.makedirs(issue_dir, exist_ok=True)
     request = jira_project_name + '/rest/api/2/search?jql={}&startAt={}&maxResults={}'
     if 'http' not in jira_project_name:
