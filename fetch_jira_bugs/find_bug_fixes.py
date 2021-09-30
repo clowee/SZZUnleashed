@@ -63,14 +63,19 @@ def find_bug_fixes(issue_path, gitlog_path, gitlog_pattern, save_path=None):
         os.makedirs(save_path, exist_ok=True)
     except FileNotFoundError:
         pass
-    save = os.path.join(save_path, 'issue_list.json')
-    with open(save, 'w') as f:
+    save_fixed = os.path.join(save_path, 'issue_list.json')
+    with open(save_fixed, 'w') as f:
         f.write(json.dumps(issue_list))
 
     return issue_list
 
 
+
 def build_issue_list(path):
+    def format_date(date):
+        date = date.replace('T', ' ') 
+        date = date.replace('.000', ' ') 
+        return date
     """ Helper method for find_bug_fixes """
     issue_list = {}
     for filename in os.listdir(path):
@@ -80,21 +85,113 @@ def build_issue_list(path):
                 try:
                     issue_list[issue['key']]['priority'] = issue['fields']['priority']['name']
                 except:
-                    pass
+                    issue_list[issue['key']]['priority'] = None
                 try:
                     issue_list[issue['key']]['type'] = issue['fields']['issuetype']['name']
                 except:
-                    pass
-                issue_list[issue['key']]['summary'] = issue['fields']['summary']
-                issue_list[issue['key']]['description'] = issue['fields']['description']
+                    issue_list[issue['key']]['type'] = None
+                try:
+                    issue_list[issue['key']]['status'] = issue['fields']['status']['name']
+                except:
+                    issue_list[issue['key']]['status'] = None
+                try:
+                    issue_list[issue['key']]['resolution'] = issue['fields']['resolutiion']['name']
+                except:
+                    issue_list[issue['key']]['resolution'] = None
+                try:
+                    issue_list[issue['key']]['labels'] = issue['fields']['labels']
+                except:
+                    issue_list[issue['key']]['status'] = None
+                try:
+                    issue_list[issue['key']]['summary'] = issue['fields']['summary']
+                except:
+                    issue_list[issue['key']]['summary'] = None
+                try:
+                    issue_list[issue['key']]['description'] = issue['fields']['description']
+                except:
+                    issue_list[issue['key']]['description'] = None
+                try:
+                    issue_list[issue['key']]['timeoriginalestimate'] = issue['fields']['timeoriginalestimate']
+                except:
+                    issue_list[issue['key']]['timeoriginalestimate'] = None
+                try:
+                    issue_list[issue['key']]['aggregatetimeoriginalestimate'] = issue['fields']['aggregatetimeoriginalestimate']
+                except:
+                    issue_list[issue['key']]['aggregatetimeoriginalestimate'] = None
 
-                created_date = issue['fields']['created'].replace('T', ' ')
-                created_date = created_date.replace('.000', ' ')
-                issue_list[issue['key']]['creationdate'] = created_date
+                try:
+                    created_date = issue['fields']['created']
+                    issue_list[issue['key']]['creationdate'] = format_date(created_date)
+                except:
+                    issue_list[issye['key']]['creationdate'] = None
 
-                res_date = issue['fields']['resolutiondate'].replace('T', ' ')
-                res_date = res_date.replace('.000', ' ')
-                issue_list[issue['key']]['resolutiondate'] = res_date
+                try:
+                    res_date = issue['fields']['resolutiondate']
+                    issue_list[issue['key']]['resolutiondate'] = format_date(res_date)
+                except:
+                    issue_list[issue['key']]['resolutiondate'] = None 
+                try:
+                    up_date = issue['fields']['updated']
+                    issue_list[issue['key']]['updatedate'] = format_date(up_date)
+                except:
+                    issue_list[issue['key']]['update'] = None 
+                try:
+                    due_date = issue['fields']['duedate']
+                    issue_list[issue['key']]['duedate'] = format_date(due_date)
+                except:
+                    issue_list[issue['key']]['duedate'] = None 
+                try:
+                    issue_list[issue['key']]['watchcount'] = issue['fields']['watches']['watchCount'] 
+                except:
+                    issue_list[issue['key']]['watchcount'] = None
+                try:
+                    issue_list[issue['key']]['aggregatetimespent'] = issue['fields']['aggregatetimespent'] 
+                except:
+                    issue_list[issue['key']]['aggregatetimespent'] = None
+                try:
+                    issue_list[issue['key']]['timespent'] = issue['fields']['timespent'] 
+                except:
+                    issue_list[issue['key']]['timespent'] = None
+                try:
+                    issue_list[issue['key']]['timeestimate'] = issue['fields']['timeestimate'] 
+                except:
+                    issue_list[issue['key']]['timeestimate'] = None
+                try:
+                    issue_list[issue['key']]['votes'] = issue['fields']['votes']['votes']
+                except:
+                    issue_list[issue['key']]['votes'] = None
+                try:
+                    issue_list[issue['key']]['reporter'] = issue['fields']['reporter']['name']
+                except:
+                    issue_list[issue['key']]['reporter'] = None
+                try:
+                    issue_list[issue['key']]['creator_name'] = issue['fields']['creator']['name']
+                except:
+                    issue_list[issue['key']]['creator_name'] = None
+                try:
+                    issue_list[issue['key']]['creator_active'] = issue['fields']['creator']['active']
+                except:
+                    issue_list[issue['key']]['creator_active'] = None
+                try:
+                    issue_list[issue['key']]['assignee'] = issue['fields']['assignee']['name']
+                except:
+                    issue_list[issue['key']]['assignee'] = None
+                try:
+                    issue_list[issue['key']]['aggregatetimeestimate'] = issue['fields']['aggregatetimeestimate']
+                except:
+                    issue_list[issue['key']]['aggregatetimeestimate'] = None
+                try:
+                    issue_list[issue['key']]['versions'] = [item['name'] for item in issue['fields']['versions']]
+                except:
+                    issue_list[issue['key']]['versions'] = None
+                try:
+                    issue_list[issue['key']]['fixversions'] = [item['name'] for item in issue['fields']['fixVersions']]
+                except:
+                    issue_list[issue['key']]['fixversions'] = None
+                try:
+                    issue_list[issue['key']]['progresspercent'] = 100*issue['fields']['progress']['progress']/issue['fields']['progress']['total']
+                except:
+                    issue_list[issue['key']]['progresspercent'] = None
             
     return issue_list
 
@@ -126,4 +223,4 @@ if __name__ == '__main__':
                         help='Path to write issue_list.json')
     args = parser.parse_args()
 
-    issue_list = find_bug_fixes(args.issue_list, args.gitlog, args.gitlog_pattern, args.save_path)
+    find_bug_fixes(args.issue_list, args.gitlog, args.gitlog_pattern, args.save_path)
