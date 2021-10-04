@@ -3,15 +3,17 @@ from CONST import *
 import os
 import pydriller as git
 import json
+import pandas as pd
 
 if __name__ == '__main__':
+    all_data = pd.DataFrame()
     for key in PROJECTS:
         # All the paths needed
         repo_path = os.path.join(ABS_REPO_PATH, key)
         save_path = os.path.join(ABS_SAVE_PATH, key)
-        issue_path = os.path.join(to_save, 'issues')
-        issue_all_path = os.path.join(to_save, 'issue_list_all.json')
-        gitlog_path = os.path.join(to_save, 'gitlog.json')
+        issue_path = os.path.join(save_path, 'issues')
+        issue_all_path = os.path.join(save_path, 'issue_list_all.json')
+        gitlog_path = os.path.join(save_path, 'gitlog.json')
         print('Processing: ', key)
         # Find the HEAD commit
         for commit in git.Repository(repo_path, order='reverse').traverse_commits():
@@ -40,8 +42,11 @@ if __name__ == '__main__':
             print("Moving to the next project...")
             continue
         # Make a dict of all issues
-        all_issues = f.build_issue_list(to_save+"/issues_all")
-        # Insert project's Jira code in the fix pattern
+        try:
+            all_issues = f.build_issue_list(save_path+"/issues_all")
+        except:
+            print("ERROR when parsing issues_all for ", key)
+            print("Moving to the next project...")
         pattern = FIX_STRING.format(proj=PROJECTS[key], nbr='{nbr}')
         # Find the fixing commit for each issue closed issue
         print(key, ' - Finding fixing commits')
@@ -56,3 +61,9 @@ if __name__ == '__main__':
         all_issues.update(fixed_issues)
         with open(issue_all_path, 'w') as file:
             file.write(json.dumps(all_issues))
+        table = pd.DataFrame.from_dict(all_issues, orient='index')
+        table.reset_index(inplace=True)
+        table.insert(0, "PROJECT_ID",key)
+        table.rename(columns = {'index':'KEY', 'creationdate':'CREATION_DATE', 'resolutiondate':'RESOLUTION_DATE', 'hash':'HASH', 'commitdate':'COMMIT_DATE'}, inplace=True)
+        all_data = all_data.append(table)
+    all_data.to_csv(ABS_SAVE_PATH+"/jira_issues.csv", index=False)
