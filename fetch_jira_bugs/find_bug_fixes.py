@@ -76,48 +76,40 @@ def build_issue_list(path):
         date = date.replace('T', ' ') 
         date = date.replace('.000', ' ') 
         return date
+    def get_field(issue_list, issue, field, keyword=None):
+        if field == "TYPE":
+            field2 = "issuetype"
+        elif field == "CREATOR_NAME":
+            field2 = "creator"
+        else:
+            field2 = ''.join(field.lower().split("_")) 
+
+        if keyword is None:
+            try:
+                issue_list[issue['key']][field] = issue['fields'][field2]
+            except:
+                issue_list[issue['key']][field] = None
+        elif keyword == "name":
+            try:
+                issue_list[issue['key']][field] = issue['fields'][field2]['name']
+            except:
+                issue_list[issue['key']][field] = None
+        return
+            
+            
     """ Helper method for find_bug_fixes """
     issue_list = {}
     for filename in os.listdir(path):
         with open(path + '/' + filename) as f:
             for issue in json.loads(f.read())['issues']:
                 issue_list[issue['key']] = {}
-                try:
-                    issue_list[issue['key']]['priority'] = issue['fields']['priority']['name']
-                except:
-                    issue_list[issue['key']]['priority'] = None
-                try:
-                    issue_list[issue['key']]['type'] = issue['fields']['issuetype']['name']
-                except:
-                    issue_list[issue['key']]['type'] = None
-                try:
-                    issue_list[issue['key']]['status'] = issue['fields']['status']['name']
-                except:
-                    issue_list[issue['key']]['status'] = None
-                try:
-                    issue_list[issue['key']]['resolution'] = issue['fields']['resolutiion']['name']
-                except:
-                    issue_list[issue['key']]['resolution'] = None
-                try:
-                    issue_list[issue['key']]['labels'] = issue['fields']['labels']
-                except:
-                    issue_list[issue['key']]['status'] = None
-                try:
-                    issue_list[issue['key']]['summary'] = issue['fields']['summary']
-                except:
-                    issue_list[issue['key']]['summary'] = None
-                try:
-                    issue_list[issue['key']]['description'] = issue['fields']['description']
-                except:
-                    issue_list[issue['key']]['description'] = None
-                try:
-                    issue_list[issue['key']]['timeoriginalestimate'] = issue['fields']['timeoriginalestimate']
-                except:
-                    issue_list[issue['key']]['timeoriginalestimate'] = None
-                try:
-                    issue_list[issue['key']]['aggregatetimeoriginalestimate'] = issue['fields']['aggregatetimeoriginalestimate']
-                except:
-                    issue_list[issue['key']]['aggregatetimeoriginalestimate'] = None
+                for field in ["PRIORITY", "TYPE", "STATUS", "RESOLUTION",
+                              "REPORTER", "CREATOR_NAME", "ASSIGNEE"]:
+                    get_field(issue_list, issue, field, keyword="name")
+                for field in ["LABELS", "SUMMARY", "DESCRIPTION", "TIME_ORIGINAL_ESTIMATE",
+                              "AGGREGATE_TIME_ORGINAL_ESTIMATE", "AGGREGATE_TIME_SPENT",
+                              "TIME_SPENT", "TIME_ESTIMATE", "AGGREGATE_TIME_ESTIMATE"]:
+                    get_field(issue_list, issue, field)
 
                 try:
                     created_date = issue['fields']['created']
@@ -132,66 +124,39 @@ def build_issue_list(path):
                     issue_list[issue['key']]['resolutiondate'] = None 
                 try:
                     up_date = issue['fields']['updated']
-                    issue_list[issue['key']]['updatedate'] = format_date(up_date)
+                    issue_list[issue['key']]['UPDATE_DATE'] = format_date(up_date)
                 except:
-                    issue_list[issue['key']]['update'] = None 
+                    issue_list[issue['key']]['UPDATE_DATE'] = None 
                 try:
                     due_date = issue['fields']['duedate']
-                    issue_list[issue['key']]['duedate'] = format_date(due_date)
+                    issue_list[issue['key']]['DUE_DATE'] = format_date(due_date)
                 except:
-                    issue_list[issue['key']]['duedate'] = None 
+                    issue_list[issue['key']]['DUE_DATE'] = None 
+                #Special cases
                 try:
-                    issue_list[issue['key']]['watchcount'] = issue['fields']['watches']['watchCount'] 
+                    issue_list[issue['key']]['WATCH_COUNT'] = issue['fields']['watches']['watchCount'] 
                 except:
-                    issue_list[issue['key']]['watchcount'] = None
+                    issue_list[issue['key']]['WATCH_COUNT'] = None
                 try:
-                    issue_list[issue['key']]['aggregatetimespent'] = issue['fields']['aggregatetimespent'] 
+                    issue_list[issue['key']]['VOTES'] = issue['fields']['votes']['votes']
                 except:
-                    issue_list[issue['key']]['aggregatetimespent'] = None
+                    issue_list[issue['key']]['VOTES'] = None
                 try:
-                    issue_list[issue['key']]['timespent'] = issue['fields']['timespent'] 
+                    issue_list[issue['key']]['CREATOR_ACTIVE'] = issue['fields']['creator']['active']
                 except:
-                    issue_list[issue['key']]['timespent'] = None
+                    issue_list[issue['key']]['CREATOR_ACTIVE'] = None
                 try:
-                    issue_list[issue['key']]['timeestimate'] = issue['fields']['timeestimate'] 
+                    issue_list[issue['key']]['VERSIONS'] = [item['name'] for item in issue['fields']['versions']]
                 except:
-                    issue_list[issue['key']]['timeestimate'] = None
+                    issue_list[issue['key']]['VERSIONS'] = None
                 try:
-                    issue_list[issue['key']]['votes'] = issue['fields']['votes']['votes']
+                    issue_list[issue['key']]['FIX_VERSIONS'] = [item['name'] for item in issue['fields']['fixVersions']]
                 except:
-                    issue_list[issue['key']]['votes'] = None
+                    issue_list[issue['key']]['FIX_VERSIONS'] = None
                 try:
-                    issue_list[issue['key']]['reporter'] = issue['fields']['reporter']['name']
+                    issue_list[issue['key']]['PROGRESS_PERCENT'] = 100*issue['fields']['progress']['progress']/issue['fields']['progress']['total']
                 except:
-                    issue_list[issue['key']]['reporter'] = None
-                try:
-                    issue_list[issue['key']]['creator_name'] = issue['fields']['creator']['name']
-                except:
-                    issue_list[issue['key']]['creator_name'] = None
-                try:
-                    issue_list[issue['key']]['creator_active'] = issue['fields']['creator']['active']
-                except:
-                    issue_list[issue['key']]['creator_active'] = None
-                try:
-                    issue_list[issue['key']]['assignee'] = issue['fields']['assignee']['name']
-                except:
-                    issue_list[issue['key']]['assignee'] = None
-                try:
-                    issue_list[issue['key']]['aggregatetimeestimate'] = issue['fields']['aggregatetimeestimate']
-                except:
-                    issue_list[issue['key']]['aggregatetimeestimate'] = None
-                try:
-                    issue_list[issue['key']]['versions'] = [item['name'] for item in issue['fields']['versions']]
-                except:
-                    issue_list[issue['key']]['versions'] = None
-                try:
-                    issue_list[issue['key']]['fixversions'] = [item['name'] for item in issue['fields']['fixVersions']]
-                except:
-                    issue_list[issue['key']]['fixversions'] = None
-                try:
-                    issue_list[issue['key']]['progresspercent'] = 100*issue['fields']['progress']['progress']/issue['fields']['progress']['total']
-                except:
-                    issue_list[issue['key']]['progresspercent'] = None
+                    issue_list[issue['key']]['PROGRESS_PERCENT'] = None
             
     return issue_list
 
