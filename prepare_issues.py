@@ -18,6 +18,10 @@ if __name__ == '__main__':
         issue_path = os.path.join(save_path, 'issues')
         issue_all_path = os.path.join(save_path, 'issue_list_all.json')
         gitlog_path = os.path.join(save_path, 'gitlog.json')
+        try:
+            os.makedirs(save_path)
+        except FileExistsError:
+            pass
         print('Processing: ', key)
         # Find the HEAD commit
         for commit in git.Repository(repo_path, order='reverse').traverse_commits():
@@ -70,4 +74,4 @@ if __name__ == '__main__':
         table.insert(0, "PROJECT_ID",key)
         table.rename(columns = {'index':'KEY', 'creationdate':'CREATION_DATE', 'resolutiondate':'RESOLUTION_DATE', 'hash':'HASH', 'commitdate':'COMMIT_DATE'}, inplace=True)
         all_data = all_data.append(table)
-    all_data.to_csv(ABS_SAVE_PATH+"/jira_issues.csv", index=False)
+    all_data.to_csv(ABS_SAVE_PATH+"/JIRA_ISSUES.csv", index=False)
