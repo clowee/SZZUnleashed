@@ -5,11 +5,14 @@ The implementation uses "line number mappings" as proposed by Williams and Spacc
 
 This repository responds to the call for public SZZ implementations by Rodríguez-Pérez, Robles, and González-Barahona. ["Reproducibility and Credibility in Empirical Software Engineering: A Case Study Based on a Systematic Literature Review of the use of the SZZ Algorithm"](https://www.researchgate.net/publication/323843822_Reproducibility_and_Credibility_in_Empirical_Software_Engineering_A_Case_Study_based_on_a_Systematic_Literature_Review_of_the_use_of_the_SZZ_algorithm), *Information and Software Technology*, Volume 99, 2018.
 
-This particular repository is a fork maintained by Cloud and Web Engineering Group of Tampere University. It is done to fix issues in the original source, such as the fact that certain features of the projects that authors were analyzing were hardcoded into the code. Also, additional scripts are provided that help automate the process of analyzing several projects.
+This particular repository is a fork maintained by [CloudSEA.AI](https://research.tuni.fi/cloudsea/) research group of [Tampere University](https://tuni.fi/en). It is done to fix issues in the original source, such as the fact that certain features of the projects that authors were analyzing were hardcoded into the code. Also, additional scripts are provided that help automate the process of analyzing several projects. This repository is used to create the [Technical Debt Dataset](https://github.com/clowee/The-Technical-Debt-Dataset)
 
-If you find SZZ Unleashed useful for your research, please cite our paper:
+If you find SZZ Unleashed useful for your research, please cite the paper:
 - Borg, M., Svensson, O., Berg, K., & Hansson, D., SZZ Unleashed: An Open Implementation of the SZZ Algorithm - Featuring Example Usage in a Study of Just-in-Time Bug Prediction for the Jenkins Project. In *Proc. of the 3rd ACM SIGSOFT International Workshop on Machine Learning Techniques for Software Quality Evaluation (MaLTeSQuE)*, pp. 7-12, 2019. arXiv preprint [arXiv:1903.01742](https://arxiv.org/abs/1903.01742).
+
 Also indicate that you were using this particular fork of the project, if you benefited form our changes.
+
+NOTE: Anything below is the documentation of the original project, our changes and additional scripts have not been documented yet, however backwards compatibility with the process below should be maintained. If it is not, please raise an issue.
 
 # Table of Contents
 1. [Background](#background)
