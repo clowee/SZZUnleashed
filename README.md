@@ -30,7 +30,7 @@ The bug-introducing commits can be extracted either from a bug tracking system s
 ## Additions in this fork <a name="fork"></a>
 
 This fork provides an additional script `prepare_issues.py`, which automates all preprocessing steps (python scripts) of the original implementation.
-The scipt loads file `CONST.py`, where certain constants must be declared.
+The script loads file `CONST.py`, where certain constants must be declared.
 The placeholder for this file is available in the repo, see its comments for constant description.
 
 Everything below is the documentation for the original SZZUnleashed. 
