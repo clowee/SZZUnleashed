@@ -4,9 +4,6 @@ import pydriller as git
 import json
 import pandas as pd
 import fetch_jira_bugs as f
-current = os.path.dirname(os.path.realpath(__file__))
-parent = os.path.dirname(current)
-sys.path.append(parent)
 from CONST import *
 
 if __name__ == '__main__':
