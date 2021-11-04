@@ -12,20 +12,29 @@ If you find SZZ Unleashed useful for your research, please cite the paper:
 
 Also indicate that you were using this particular fork of the project, if you benefited form our changes.
 
-NOTE: Anything below is the documentation of the original project, our changes and additional scripts have not been documented yet, however backwards compatibility with the process below should be maintained. If it is not, please raise an issue.
 
 # Table of Contents
 1. [Background](#background)
-2. [Running SZZ Unleashed](#szz_usage)
-3. [SZZ Unleashed with Docker](#szz_docker)
-4. [Example Application: Training a Classifier for Just-in-Time Bug Prediction](#feat_extract)
-5. [Examples and executables](#examples_n_exec)
-6. [Authors](#authors)
+2. [Additions in this fork](#fork)
+3. [Running SZZ Unleashed](#szz_usage)
+4. [SZZ Unleashed with Docker](#szz_docker)
+5. [Example Application: Training a Classifier for Just-in-Time Bug Prediction](#feat_extract)
+6. [Examples and executables](#examples_n_exec)
+7. [Authors](#authors)
 
 ## Background <a name="background"></a>
 
 The SZZ algorithm is used to find bug-introducing commits from a set of bug-fixing commits. 
 The bug-introducing commits can be extracted either from a bug tracking system such as Jira or simply by searching for commits that state that they are fixing something. The identified bug-introducing commits can then be used to support empirical software engineering research, e.g., defect prediction or software quality. As an example, this implementation has been used to collect training data for a machine learning-based approach to risk classification of individual commits, i.e., training a random forest classifier to highlight commits that deserve particularily careful code review. The work is described in a [MSc. thesis from Lund University](https://www.lunduniversity.lu.se/lup/publication/8971266).
+
+## Additions in this fork <a name="fork"></a>
+
+This fork provides an additional script `prepare_issues.py`, which automates all preprocessing steps (python scripts) of the original implementation.
+The scipt loads file `CONST.py`, where certain constants must be declared.
+The placeholder for this file is available in the repo, see its comments for constant description.
+
+Everything below is the documentation for the original SZZUnleashed. 
+Backwards compatibility should be maintained, but feel free to raise an issue if you encounter broken functionality.
 
 ## Running SZZ Unleashed <a name="szz_usage"></a>
 Building and running SZZ Unleashed requires Java 8 and Gradle. Python is required to run the supporting scripts and Docker must be installed to use the provided Docker images. All scripts and compilations has been tested on Linux and Mac, and partly on Windows 10.
